@@ -131,7 +131,19 @@ def calculate_wrapped_stats():
   else: 
     longest_streak = 0 
   
-  print(f"Longest streak: {longest_streak} days")
+  print(f"Longest streak: {longest_streak} days") 
+
+  # top 5 commit hours 
+  cursor.execute(sql["top_commit_hours"]) 
+  # results = cursor.fetchall() 
+
+  # if results: 
+  #   for row in results:
+  #     raw_hour = int(row[0])
+  #     co mmit_count = row[1]
+  #     print(f"time: {raw_hour} ({commit_count} commits)")
+  # else: 
+  #   print("no commit hour data found")
 if __name__ == "__main__":
   calculate_wrapped_stats() 
 

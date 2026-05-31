@@ -44,12 +44,12 @@ LIMIT 1;
 
 -- name: busiest_hour 
 SELECT 
-  EXTRACT(HOUR FROM author_date) as commit_hour,
+  EXTRACT(HOUR FROM author_date AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Manila') as commit_hour,
   COUNT(*) as commit_count 
 FROM commits 
 GROUP BY commit_hour
 ORDER BY commit_count DESC 
-LIMIT 1 
+LIMIT 1
 
 -- name: longest_streak 
 WITH unique_days AS (
@@ -76,3 +76,12 @@ SELECT streak_length
 FROM streaks 
 ORDER BY streak_length DESC 
 LIMIT 1;
+
+-- name: top_commit_hours 
+SELECT 
+  EXTRACT(HOUR FROM author_date AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Manila') as commit_hour,
+  COUNT(*) as commit_count 
+FROM commits 
+GROUP BY commit_hour 
+ORDER BY commit_count DESC 
+LIMIT 5; 
