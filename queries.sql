@@ -44,3 +44,29 @@ FROM commits
 GROUP BY commit_hour
 ORDER BY commit_count DESC 
 LIMIT 1 
+
+-- name: longest_streak 
+WITH unique_days AS (
+  SELECT DISTINCT DATE_TRUNC('day', author_date) as commit_date
+  FROM commits
+), 
+indexed_days AS (
+  -- Asign a sequential row number sorted by date 
+  SELECT 
+    commit_date,
+    ROW_NUMBER() OVER (ORDER BY commit_date) as row_num 
+  FROM unique_days
+),
+streaks AS (
+  -- Subtract row_num from commit_date to find groups of consecutive days
+  SELECT 
+    commit_date - (row_num * INTERVAL '1 day') as streak_group,
+    COUNT(*) as streak_length 
+  FROM indexed_days
+  GROUP BY streak_group 
+)
+-- Grab the longest consecutive block 
+SELECT streak_length
+FROM streaks 
+ORDER BY streak_length DESC 
+LIMIT 1;
