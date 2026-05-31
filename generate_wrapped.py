@@ -79,6 +79,16 @@ def calculate_wrapped_stats():
     print(f"Favorite Code Word: You loved typing '{favorite_word} ({word_count} times)!")
   else :
     print("Favorite Code Word: No commit messages found to analyze.")
+
+  # STAT 3: Favorite Language 
+  cursor.execute(sql["top_language"]) 
+  top_language_result = cursor.fetchone() 
+  if top_language_result is not None: 
+    top_language = top_language_result[0]
+    numOfRepos = top_language_result[1]
+    print(f"Top Language: Your used {top_language} in {numOfRepos} repos!")
+  else: 
+    print(f"Top Language: Ooops! There's no top language.")
 if __name__ == "__main__":
   calculate_wrapped_stats() 
 
