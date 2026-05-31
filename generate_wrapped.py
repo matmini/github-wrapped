@@ -43,7 +43,12 @@ def calculate_wrapped_stats():
   conn = get_db_connection()
   cursor = conn.cursor() 
 
-  print("\nAll-time GitHub Wrapped") 
+  # Get Username 
+  cursor.execute(sql["github_username"])
+  username_result = cursor.fetchone()
+  username = username_result[0]
+
+  print(f"\n{username}'s all-time github wrapped") 
   # print("=" * 45)
 
   # STAT: Number of Commits
