@@ -11,5 +11,15 @@ services:
       - "5432:5432"
     volumes: 
       - pgdata:/var/lib/postgresql/data 
+  app:
+    build: .
+    container_name: wrapped_app
+    depends_on:
+      - postgres
+    # Pass the entire .env file directly into your Python container
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
 volumes:
   pgdata: 
