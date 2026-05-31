@@ -19,3 +19,13 @@ WHERE length(word) > 3 AND word NOT IN ('with', 'this', 'that', 'from', 'your', 
 GROUP BY word
 ORDER BY word_count DESC
 LIMIT 1; 
+
+-- name: top_language
+SELECT  
+  language,
+  COUNT(*) as repo_count
+FROM repositories 
+WHERE language IS NOT NULL
+GROUP BY language
+ORDER BY repo_count DESC
+LIMIT 1;
