@@ -91,7 +91,38 @@ def fetch_and_save_repos():
   conn.close()
   print("All data successfully synced to the database!")
   
- 
+def fetch_and_save_commits(): 
+  """Fetches commit history for our saved repositories and stores them."""
+  conn = get_db_connection()
+  cursor = conn.cursor()
+
+  # 1. Grab all the repository names currently in our database 
+  cursor.execute("SELECT name FROM repositories;")
+  repos = cursor.fetchall()
+
+  # We will need your GitHub username to build the repo path 
+  # Let's fetch your username dynamically from the API to make it robust 
+  profile_response = requests.get("https://api.github.com/user", headers=headers)
+  username = profile_response.json().get("login") 
+
+  print(f"[FETCH] Beginning commit sync for {len(repos)} repositories...")
+
+  for row in repos: 
+    repo_name = row[0] # name
+    # GitHub endpoint format: /repos/{owner}/{repo}/commits 
+    url = f"https://api.github.com/repos/{username}/{repo_name}/commits?per_page=50" 
+    
+    print(f"[FETCH] Querying commits for: {repo_name}...")
+    response = requests.get(url, headers=headers) 
+
+    if response.status_code != 200:
+      print(f"[ERROR] Could not fetch commits for {repo_name}. Status {response.status}")
+      continue 
+
+    commits = response.json() 
+    print(f"[DATA] Found {len(commits)} commits for {repo_name}") 
+
+
 
 def test_github_connection(): 
   # 3. Request your authenticated user infro from the GitHub API 
@@ -116,3 +147,4 @@ if __name__ == "__main__":
   print("Testing database connection and table creation...")
   setup_database()
   fetch_and_save_repos()
+  fetch_and_save_commits()
