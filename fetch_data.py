@@ -29,11 +29,15 @@ def setup_database():
   conn = get_db_connection()
   cursor = conn.cursor()
 
+  #cursor.execute("DROP TABLE IF EXISTS commits CASCADE;")
+  #cursor.execute("DROP TABLE IF EXISTS repositories CASCADE;")
+
   # Verify/Create the repositories table 
   cursor.execute("""
     CREATE TABLE IF NOT EXISTS repositories (
         id SERIAL PRIMARY KEY, 
         name VARCHAR(255) UNIQUE NOT NULL,
+        username VARCHAR(255),
         language VARCHAR(100),
         stars INTEGER DEFAULT 0
       );
@@ -75,16 +79,18 @@ def fetch_and_save_repos():
 
   for repo in repos: 
     name = repo.get("name")
+    owner = repo.get("owner", {})
+    username = owner.get("login")
     lang = repo.get("language") or "Unknown"
     stars = repo.get("stargazers_count") or 0 
   
     # Insert data, or update if the repository name already exists (upsert)
     cursor.execute("""
-      INSERT INTO repositories (name, language, stars)
-      VALUES (%s, %s, %s)
+      INSERT INTO repositories (username, name, language, stars)
+      VALUES (%s, %s, %s, %s)
       ON CONFLICT (name)
       DO UPDATE SET language = EXCLUDED.language, stars = EXCLUDED.stars;
-    """, (name, lang, stars))
+    """, (username, name, lang, stars))
   
   conn.commit()
   cursor.close()
