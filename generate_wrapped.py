@@ -25,7 +25,7 @@ def load_sql_queries(filepath="queries.sql"):
         # Save previous query if it exists 
         if current_name: 
           queries[current_name] = "".join(current_lines).strip()
-        current_name = line.replace("--- name:", "").strip()
+        current_name = line.replace("-- name:", "").strip()
         current_lines = []
       elif current_name: 
         current_lines.append(line)
@@ -47,15 +47,28 @@ def calculate_wrapped_stats():
   print("=" * 45)
 
   # STAT 1: Your Busiest Coding Day of the Week 
-  # (Postfres 'dow' extracts Day of Week: 0 = Sunday, 1 = Monday, etc.)
-  #busiest_day = cursor.getchone() 
+  # (Postgresql 'dow' extracts Day of Week: 0 = Sunday, 1 = Monday, etc.)
+  cursor.execute(sql["busiest_day"])
+  busiest_day = cursor.fetchone() 
+
+  days_map = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday"
+  }
+
+  if busiest_day and busiest_day[0] is not None:
+    day_index = int(busiest_day[0])
+    day_name = days_map[day_index]
+    commit_count = busiest_day[1]
+    print(f"Busiest Day: You do your best word on {day_name}s! ({commit_count} commits)")
+  else: 
+    print("Busiest dDay: Not enough commit history found yet.")
 
 if __name__ == "__main__":
-  #calculate_wrapped_stats() 
+  calculate_wrapped_stats() 
 
-  queries = load_sql_queries("queries.sql")
-
-  print(f"Found {len(queries)} queries in your SQL file.")
-  for query_name, query_sql in queries.items():
-    print(f"\nKey found: '{query_name}'")
-    print(query_sql)
