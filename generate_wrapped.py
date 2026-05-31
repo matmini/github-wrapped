@@ -43,31 +43,43 @@ def calculate_wrapped_stats():
   conn = get_db_connection()
   cursor = conn.cursor() 
 
-  print("\n-- YOUR GITHUB ALL-TIME WRAPPED ANALYTICS --") 
-  print("=" * 45)
+  print("\nAll-time GitHub Wrapped") 
+  # print("=" * 45)
 
-  # STAT 1: Your Busiest Coding Day of the Week 
+  # STAT: Number of Commits
+  cursor.execute(sql["total_commits"])
+  total_commits_result = cursor.fetchone()
+  total_commits = total_commits_result[0]
+  print(f"{total_commits} commits")
+  
+  # STAT: Number of Repos
+  cursor.execute(sql["total_repos"])
+  total_repos_result = cursor.fetchone()
+  total_repos = total_repos_result[0]
+  print(f"{total_repos} repos")
+
+  # STAT: Your Busiest Coding Day of the Week 
   # (Postgresql 'dow' extracts Day of Week: 0 = Sunday, 1 = Monday, etc.)
-  cursor.execute(sql["busiest_day"])
-  busiest_day = cursor.fetchone() 
+  # cursor.execute(sql["busiest_day"])
+  # busiest_day = cursor.fetchone() 
 
-  days_map = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday"
-  }
+  # days_map = {
+  #   0: "Sunday",
+  #   1: "Monday",
+  #   2: "Tuesday",
+  #   3: "Wednesday",
+  #   4: "Thursday",
+  #   5: "Friday",
+  #   6: "Saturday"
+  # }
 
-  if busiest_day and busiest_day[0] is not None:
-    day_index = int(busiest_day[0])
-    day_name = days_map[day_index]
-    commit_count = busiest_day[1]
-    print(f"Most Active Day: {day_name}s ({commit_count} commits)")
-  else: 
-    print("Most Active Day:: Not enough commit history found yet.")
+  # if busiest_day and busiest_day[0] is not None:
+  #   day_index = int(busiest_day[0])
+  #   day_name = days_map[day_index]
+  #   commit_count = busiest_day[1]
+  #   print(f"Most Active Day: {day_name}s ({commit_count} commits)")
+  # else: 
+  #   print("Most Active Day:: Not enough commit history found yet.")
 
   # STAT 2: Most Common Word in Your Commit Message 
   # cursor.execute(sql["favorite_word"])
@@ -86,7 +98,7 @@ def calculate_wrapped_stats():
   if top_language_result is not None: 
     top_language = top_language_result[0]
     numOfRepos = top_language_result[1]
-    print(f"Top Language: {top_language} ({numOfRepos} repos)")
+    print(f"Top Language: {top_language}")
   else: 
     print(f"Top Language: Ooops! There's no top language.")
 
@@ -104,7 +116,7 @@ def calculate_wrapped_stats():
     ampm_time = f"{hour - 12} PM"
   else:
     ampm_time = f"{hour} AM"  
-  print(f"Most Active Hour: {ampm_time} ({commit_count} commits)")
+  print(f"Most Active at {ampm_time}")
 # Result: "11 PM"  # print(most_active_hour_result)
 if __name__ == "__main__":
   calculate_wrapped_stats() 
