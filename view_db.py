@@ -78,5 +78,5 @@ def view_commits():
   cursor.close()
   conn.close()
 if __name__ == "__main__":
-  # view_repositories()
-  view_commits()
+  view_repositories()
+  #view_commits()

@@ -69,6 +69,16 @@ def calculate_wrapped_stats():
   else: 
     print("Busiest dDay: Not enough commit history found yet.")
 
+  # STAT 2: Most Common Word in Your Commit Message 
+  cursor.execute(sql["favorite_word"])
+  favorite_word_result = cursor.fetchone()
+
+  if favorite_word_result:
+    favorite_word = favorite_word_result[0]
+    word_count = favorite_word_result[1]
+    print(f"Favorite Code Word: You loved typing '{favorite_word} ({word_count} times)!")
+  else :
+    print("Favorite Code Word: No commit messages found to analyze.")
 if __name__ == "__main__":
   calculate_wrapped_stats() 
 
