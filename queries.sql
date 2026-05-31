@@ -1,3 +1,9 @@
+-- name: github_username
+SELECT username 
+FROM repositories 
+WHERE username IS NOT NULL 
+LIMIT 1;
+
 -- name: total_commits
 SELECT COUNT(*) as total_count FROM commits;
 
