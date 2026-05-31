@@ -18,10 +18,29 @@ def get_db_connection():
   return psycopg.connect(
     host=os.getenv("DB_HOST"),
     port=os.getenv("DB_PORT"),
-    database=os.getenv("DB_NAME"),
+    dbname=os.getenv("DB_NAME"),
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASSWORD")
   )
+
+def setup_database(): 
+  """Creates a table for our repositories if it doesn't exist yet."""
+  conn = get_db_connection()
+  cursor = conn.cursor()
+
+  # Create a table to store our wrapped data 
+  cursor.execute("""
+    CREATE TABLE IF NOT EXISTS repositories (
+        id SERIAL PRIMARY KEY, 
+        name VARCHAR(255) UNIQUE NOT NULL,
+        language VARCHAR(100),
+        stars INTEGER DEFAULT 0
+      );
+  """)
+  conn.commit()
+  cursor.close()
+  conn.close()
+  print("📋 Database table verified/created successfully.")
 
 def test_github_connection(): 
   # 3. Request your authenticated user infro from the GitHub API 
@@ -43,4 +62,5 @@ def test_github_connection():
     print(f"Error Message: {response.text}")
 
 if __name__ == "__main__":
-  test_github_connection()
+  print("Testing database connection and table creation...")
+  setup_database()
