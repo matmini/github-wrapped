@@ -56,16 +56,31 @@ def fetch_and_save_repos():
   
   repos = response.json()
 
-  print(f"\nTotal repositories fetched: {len(repos)}")
-  if len(repos) > 0:
-    print("\n--- First repository raw data sample ---")
-    # json.dumps with indent=4 makes the raw data look structured
-    print(json.dumps(repos[0], indent=4))
-    print("------------------------------------------")
-  else: 
-    print("No repos found for this account.")
+  # Connect to the local Docker Postgres database 
+  conn = get_db_connection()
+  cursor = conn.cursor() 
+
+  print(f"Saving {len(repos)} repositories to Docker database...") 
+
+  for repo in repos: 
+    name = repo.get("name")
+    lang = repo.get("language") or "Unknown"
+    stars = repo.get("stargazers_count") or 0 
   
-  return 
+    # Insert data, or update if the repository name already exists (upsert)
+    cursor.execute("""
+      INSERT INTO repositories (name, language, stars)
+      VALUES (%s, %s, %s)
+      ON CONFLICT (name)
+      DO UPDATE SET language = EXCLUDED.language, stars = EXCLUDED.stars;
+    """, (name, lang, stars))
+  
+  conn.commit()
+  cursor.close()
+  conn.close()
+  print("All data successfully synced to the database!")
+  
+ 
 
 def test_github_connection(): 
   # 3. Request your authenticated user infro from the GitHub API 
