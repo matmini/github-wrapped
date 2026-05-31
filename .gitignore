@@ -7,5 +7,7 @@ pgdata/
 # Ignore the virtual environment folder 
 venv/
 
+# Ignore python dependecies 
+requirements.txt
 
 __pycache__/
