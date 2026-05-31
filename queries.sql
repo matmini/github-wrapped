@@ -29,3 +29,12 @@ WHERE language IS NOT NULL
 GROUP BY language
 ORDER BY repo_count DESC
 LIMIT 1;
+
+-- name: busiest_hour 
+SELECT 
+  EXTRACT(HOUR FROM author_date) as commit_hour,
+  COUNT(*) as commit_count 
+FROM commits 
+GROUP BY commit_hour
+ORDER BY commit_count DESC 
+LIMIT 1
