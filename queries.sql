@@ -37,4 +37,4 @@ SELECT
 FROM commits 
 GROUP BY commit_hour
 ORDER BY commit_count DESC 
-LIMIT 1
+LIMIT 1 

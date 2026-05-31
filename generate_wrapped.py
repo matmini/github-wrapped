@@ -43,7 +43,7 @@ def calculate_wrapped_stats():
   conn = get_db_connection()
   cursor = conn.cursor() 
 
-  print("\n-- YOUR GITHUB WRAPPED ANALYTICS --") 
+  print("\n-- YOUR GITHUB ALL-TIME WRAPPED ANALYTICS --") 
   print("=" * 45)
 
   # STAT 1: Your Busiest Coding Day of the Week 
@@ -65,20 +65,20 @@ def calculate_wrapped_stats():
     day_index = int(busiest_day[0])
     day_name = days_map[day_index]
     commit_count = busiest_day[1]
-    print(f"Busiest Day: You do your best word on {day_name}s! ({commit_count} commits)")
+    print(f"Most Active Day: {day_name}s ({commit_count} commits)")
   else: 
-    print("Busiest dDay: Not enough commit history found yet.")
+    print("Most Active Day:: Not enough commit history found yet.")
 
   # STAT 2: Most Common Word in Your Commit Message 
-  cursor.execute(sql["favorite_word"])
-  favorite_word_result = cursor.fetchone()
+  # cursor.execute(sql["favorite_word"])
+  # favorite_word_result = cursor.fetchone()
 
-  if favorite_word_result:
-    favorite_word = favorite_word_result[0]
-    word_count = favorite_word_result[1]
-    print(f"Favorite Code Word: You loved typing '{favorite_word} ({word_count} times)!")
-  else :
-    print("Favorite Code Word: No commit messages found to analyze.")
+  # if favorite_word_result:
+  #   favorite_word = favorite_word_result[0]
+  #   word_count = favorite_word_result[1]
+  #   print(f"Favorite Code Word: You loved typing '{favorite_word} ({word_count} times)!")
+  # else :
+  #   print("Favorite Code Word: No commit messages found to analyze.")
 
   # STAT 3: Favorite Language 
   cursor.execute(sql["top_language"]) 
@@ -86,9 +86,26 @@ def calculate_wrapped_stats():
   if top_language_result is not None: 
     top_language = top_language_result[0]
     numOfRepos = top_language_result[1]
-    print(f"Top Language: Your used {top_language} in {numOfRepos} repos!")
+    print(f"Top Language: {top_language} ({numOfRepos} repos)")
   else: 
     print(f"Top Language: Ooops! There's no top language.")
+
+  # STAT 4: Most Active Hour 
+  cursor.execute(sql["busiest_hour"])
+  most_active_hour_result = cursor.fetchone()
+  hour = int(most_active_hour_result[0])
+  commit_count = most_active_hour_result[1]
+  """Converts a 24-hour integer (0-23) into a readable AM/PM string."""
+  if hour == 0:
+    ampm_time = "12 AM"
+  elif hour == 12:
+    ampm_time = "12 PM"
+  elif hour > 12:
+    ampm_time = f"{hour - 12} PM"
+  else:
+    ampm_time = f"{hour} AM"  
+  print(f"Most Active Hour: {ampm_time} ({commit_count} commits)")
+# Result: "11 PM"  # print(most_active_hour_result)
 if __name__ == "__main__":
   calculate_wrapped_stats() 
 
