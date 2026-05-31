@@ -29,7 +29,7 @@ def setup_database():
   conn = get_db_connection()
   cursor = conn.cursor()
 
-  # Create a table to store our wrapped data 
+  # Verify/Create the repositories table 
   cursor.execute("""
     CREATE TABLE IF NOT EXISTS repositories (
         id SERIAL PRIMARY KEY, 
@@ -38,10 +38,21 @@ def setup_database():
         stars INTEGER DEFAULT 0
       );
   """)
+
+  # Verify/Create the commits table (Linked to repositories via fk) 
+  cursor.execute("""
+    CREATE TABLE IF NOT EXISTS commits (
+        id SERIAL PRIMARY KEY,
+        sha VARCHAR(100) UNIQUE NOT NULL,
+        repo_name VARCHAR(255) REFERENCES repositories(name) ON DELETE CASCADE,
+        message TEXT,
+        author_date TIMESTAMP
+      );
+  """)
   conn.commit()
   cursor.close()
   conn.close()
-  print("📋 Database table verified/created successfully.")
+  print("Database tables verified/created successfully.")
 
 def fetch_and_save_repos(): 
   """Fetches repos from GitHub and saves them to PostgreSQL."""
