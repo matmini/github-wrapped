@@ -1,6 +1,7 @@
 import os 
 import requests 
 import psycopg 
+import json 
 from dotenv import load_dotenv 
 
 # 1. Load the hidden secrets from the .env file 
@@ -42,6 +43,30 @@ def setup_database():
   conn.close()
   print("📋 Database table verified/created successfully.")
 
+def fetch_and_save_repos(): 
+  """Fetches repos from GitHub and saves them to PostgreSQL."""
+  url = "https://api.github.com/user/repos?per_page=100&type=owner"
+  print("Fetching repositories from GitHub...")
+  response = requests.get(url, headers=headers)
+
+  if response.status_code != 200:
+    print(f"GitHub error: {response.status_code}")
+    print(f"Error details: {response.text}")
+    return 
+  
+  repos = response.json()
+
+  print(f"\nTotal repositories fetched: {len(repos)}")
+  if len(repos) > 0:
+    print("\n--- First repository raw data sample ---")
+    # json.dumps with indent=4 makes the raw data look structured
+    print(json.dumps(repos[0], indent=4))
+    print("------------------------------------------")
+  else: 
+    print("No repos found for this account.")
+  
+  return 
+
 def test_github_connection(): 
   # 3. Request your authenticated user infro from the GitHub API 
   url = "https://api.github.com/user"
@@ -64,3 +89,4 @@ def test_github_connection():
 if __name__ == "__main__":
   print("Testing database connection and table creation...")
   setup_database()
+  fetch_and_save_repos()
