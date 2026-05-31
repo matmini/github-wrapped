@@ -117,7 +117,16 @@ def calculate_wrapped_stats():
   else:
     ampm_time = f"{hour} AM"  
   print(f"Most Active at {ampm_time}")
-# Result: "11 PM"  # print(most_active_hour_result)
+
+  # Longest Streak 
+  cursor.execute(sql['longest_streak'])
+  longest_streak_result = cursor.fetchone()
+  if longest_streak_result is not None:
+    longest_streak = longest_streak_result[0]
+  else: 
+    longest_streak = 0 
+  
+  print(f"Longest streak: {longest_streak} days")
 if __name__ == "__main__":
   calculate_wrapped_stats() 
 
