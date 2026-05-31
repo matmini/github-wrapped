@@ -1,3 +1,9 @@
+-- name: total_commits
+SELECT COUNT(*) as total_count FROM commits;
+
+-- name: total_repos 
+SELECT COUNT(*) as total_count FROM repositories;
+
 -- name: busiest_day 
 SELECT 
   EXTRACT(DOW FROM author_date) as day_num, 
