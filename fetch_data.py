@@ -120,7 +120,32 @@ def fetch_and_save_commits():
       continue 
 
     commits = response.json() 
-    print(f"[DATA] Found {len(commits)} commits for {repo_name}") 
+    print(f"[DATA] Found {len(commits)} commits for {repo_name}. Saving to database...")
+
+
+    
+    for commit_data in commits: 
+      sha = commit_data.get("sha") 
+      commit_obj = commit_data.get("commit", {})
+      message = commit_obj.get("message")
+
+      # Extract the timestamp when the code was committed 
+      author_info = commit_obj.get("author", {})
+      date_str = author_info.get("date") # format from GitHub: 'YYYY-MM-DDTHH:MM:SSZ'
+
+      # Insert or update data safely (UPSERT)
+      cursor.execute("""
+        INSERT INTO commits (sha, repo_name, message, author_date)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (sha)
+        DO NOTHING;
+      """, (sha, repo_name, message, date_str))
+      
+  conn.commit()
+  cursor.close()
+  conn.close()
+  print("[SUCCESS] All commit history successfully synced to the database!")
+      
 
 
 
@@ -144,7 +169,13 @@ def test_github_connection():
     print(f"Error Message: {response.text}")
 
 if __name__ == "__main__":
-  print("Testing database connection and table creation...")
-  setup_database()
-  fetch_and_save_repos()
-  fetch_and_save_commits()
+  profile_url = "https://api.github.com/user" 
+  profile_response = requests.get(profile_url, headers=headers)
+
+  if profile_response.status_code == 200: 
+    print(f"Connected as: {profile_response.json().get('login')}")
+    setup_database()
+    fetch_and_save_repos()
+    fetch_and_save_commits()
+  else:
+    print(f"[ERROR] Failed to connect to GitHub. Status Code: {profile_response.status_code}")
